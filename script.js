@@ -1,5 +1,73 @@
 // 1. Setup Event Listener for Page Load:
 document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function() {
+    const addButton = document.getElementById('add-task-btn'); // Select the "Add Task" button
+    const taskInput = document.getElementById('task-input'); // Select the input field for tasks
+    const taskList = document.getElementById('task-list'); // Select the unordered list for displaying tasks
+
+    // Load tasks from Local Storage when the page loads
+    loadTasks();
+
+    // Add event listener to the Add Task button
+    addButton.addEventListener('click', addTask);
+    // Add event listener for the 'keypress' event on the input field
+    taskInput.addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') { // Check if the pressed key is 'Enter'
+            addTask(); // Call addTask
+        }
+    });
+
+    function loadTasks() {
+        const savedTasks = localStorage.getItem('tasks'); // Retrieve the task list
+
+        if (savedTasks) {
+            const tasks = JSON.parse(savedTasks); // Parse tasks from JSON to an array
+            tasks.forEach(taskText => {
+                addTaskToList(taskText); // Populate the task list with each task
+            });
+        }
+    }
+
+    function addTask() {
+        const taskText = taskInput.value.trim(); // Retrieve and trim the value from the input field
+
+        if (taskText === "") {
+            alert("Please enter a task."); // Prompt the user if the input is empty
+            return; // Exit the function if the input is empty
+        }
+
+        addTaskToList(taskText); // Add the task to the list
+        taskInput.value = ''; // Clear the input field
+        updateLocalStorage(); // Update Local Storage with the new task
+    }
+
+    function addTaskToList(taskText) {
+        const listItem = document.createElement('li'); // Create a new li element
+        listItem.textContent = taskText; // Set its textContent to taskText
+
+        const removeButton = document.createElement('button'); // Create a new button element
+        removeButton.textContent = "Remove"; // Set button text
+        removeButton.className = 'remove-btn'; // Assign a class name
+
+        removeButton.onclick = function() {
+            taskList.removeChild(listItem); // Remove the li element from taskList
+            updateLocalStorage(); // Update Local Storage after removal
+        };
+
+        listItem.appendChild(removeButton); // Append the remove button to the li element
+        taskList.appendChild(listItem); // Append the li to taskList
+    }
+
+    function updateLocalStorage() {
+        const tasks = [];
+        // Collect all task texts
+        taskList.querySelectorAll('li').forEach(item => {
+            tasks.push(item.firstChild.textContent); // Push task text into the array
+        });
+        localStorage.setItem('tasks', JSON.stringify(tasks)); // Save to Local Storage
+    }
+});
+
     async function fetchUserData() {
         const apiUrl = 'https://jsonplaceholder.typicode.com/users'; // API endpoint for user data
         const dataContainer = document.getElementById('api-data'); // Select the element to display API data
@@ -28,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function() {
     fetchUserData(); // Invoke fetchUserData when the document is fully loaded
 });
 
-// Select DOM Elements:
+// 2 .Select DOM Elements:
 
 
 
@@ -36,7 +104,7 @@ const addButton = document.getElementById('add-task-btn'); // Select the "Add Ta
 const taskInput = document.getElementById('task-input'); // Select the input field for tasks
 const taskList = document.getElementById('task-list'); // Select the unordered list for displaying tasks
 
-// Create the addTask Function:
+// 3 Create the addTask Function:
 function addTask() {
     const taskText = taskInput.value.trim(); // Retrieve and trim the value from the input field
 
